@@ -1,0 +1,85 @@
+version: '3.8'
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service-discovery
+      - user-service
+      - post-service
+
+  service-discovery:
+    build: ./service-discovery
+    ports:
+      - "8761:8761"
+
+  user-service:
+    build: ./user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  post-service:
+    build: ./post-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  notification-service:
+    build: ./notification-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  chat-service:
+    build: ./chat-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  media-service:
+    build: ./media-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  analytics-service:
+    build: ./analytics-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-db
+      - rabbitmq
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-gateway
+
+  postgres-db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: socialmedia
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
